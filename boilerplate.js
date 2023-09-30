@@ -43,15 +43,11 @@ if (make_module.toLowerCase() === 'make:module') {
     // create controller
     fs.writeFile(path.join(dir_controller,'controller.js'), CONTROLLER, function (err) {
         if (err) throw err;
-            console.log('Created ',path.join(dir_controller,'controller.service_1.js'));
+            console.log('Created ',path.join(dir_controller,'controller.js'));
     });
     fs.writeFile(path.join(dir_controller,'controller.service_1.js'), CONTROLLER_SERVICE, function (err) {
         if (err) throw err;
             console.log('Created ',path.join(dir_controller,'controller.service_1.js'));
-    });
-    fs.writeFile(path.join(dir_controller,'reuse_service.js'), CONTROLLER_SERVICE, function (err) {
-        if (err) throw err;
-            console.log('Created ',path.join(dir_controller,'reuse_service.js'));
     });
 
     // create model

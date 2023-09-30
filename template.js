@@ -3,7 +3,7 @@ const response=require("../../helper/response");
 
 module.exports={
 
-   init:(req,res,next)=>{
+   init:async(req,res,next)=>{
         try {
             let payload=services.init();
 
@@ -22,7 +22,7 @@ const CONTROLLER_SERVICE = `const query=require("../../model/[MODEL_NAME]/[MODEL
 
 let [MODEL_NAME]={};
 
-[MODEL_NAME].init=()=>{
+[MODEL_NAME].init=async()=>{
     return {message:"OK"};
 };
 
@@ -51,7 +51,9 @@ const controller=require("../../controller/[MODEL_NAME]/controller.js");
 const v_request=require("../../schemas/[MODEL_NAME]/[MODEL_NAME].validate.js");
 const validate=require("../../middleware/validate_joi.js");
 
-router.post("/init",validate.body(v_request.init),controller.init);
+const auth=require("../../middleware/auth.js");
+
+router.post("/init",validate.body(v_request.init),auth.authjwt,controller.init);
 
 module.exports=router;
 `
