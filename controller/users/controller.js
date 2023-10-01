@@ -23,9 +23,10 @@ module.exports={
                 
             }
 
-            return response.notFound({},res,`Invalid email atau password, silakan cek kembali`)
+            return response.notFound({},res,`Invalid email atau password, silakan cek kembali`);
 
         } catch (error) {
+            console.log(error);
             return response.error({},res,error.message);
         }
 
