@@ -8,6 +8,7 @@ exports.up = function(knex) {
     table.text("username").defaultTo(null);
     table.string("email",64).defaultTo(null);
     table.text("password").defaultTo(null);
+    table.text("pictures").defaultTo(null);
     table.boolean("verified").defaultTo(false);
     table.timestamp("birthday").defaultTo(null);
     table.smallint("gender").defaultTo(null);
