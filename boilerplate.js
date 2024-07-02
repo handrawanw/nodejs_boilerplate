@@ -71,15 +71,15 @@ try {
       );
   
       // create views
-      fs.mkdirSync(path.join(dir_views, modul_name), { recursive: true });
-      fs.writeFile(
-        path.join(dir_views, modul_name, `index.ejs`),
-        VIEWS,
-        function (err) {
-          if (err) throw err;
-          console.log("Created ", path.join(dir_views, modul_name, `index.ejs`));
-        }
-      );
+      // fs.mkdirSync(path.join(dir_views, modul_name), { recursive: true });
+      // fs.writeFile(
+      //   path.join(dir_views, modul_name, `index.ejs`),
+      //   VIEWS,
+      //   function (err) {
+      //     if (err) throw err;
+      //     console.log("Created ", path.join(dir_views, modul_name, `index.ejs`));
+      //   }
+      // );
   
       // create swagger
       fs.writeFile(
@@ -87,7 +87,7 @@ try {
         SWAGGER_DOCS,
         function (err) {
           if (err) throw err;
-          console.log("Created ", path.join(dir_swagger, "swagger.js"));
+          console.log("Created ", path.join(dir_swagger, `${modul_name}.swagger.js`));
         }
       );
       
