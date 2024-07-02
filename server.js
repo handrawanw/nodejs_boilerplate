@@ -1,57 +1,29 @@
+require("dotenv").config();
+
 const express=require("express");
 const app=express();
 
-// const device = require('express-device');
-// app.use(device.capture());
+const { Server }=require("socket.io");
+const http=require("http");
 
-require("dotenv").config();
+const PORT=process.env.PORT||8001;
 
-const { Server } = require("socket.io");
-const http = require("http");
-const server = http.createServer(app);
-const IO = new Server(server, {
-  path: "/",
-  allowEIO3: true,
-  cors: {
-    origin: ["*"],
-    methods: ["GET", "POST"],
-    credentials: true,
-  }
-});
+// register request form 
+app.use(express.urlencoded({extended:true}));
+app.use(express.json());
+// register request form
 
-IO.on("connection", (socket) => {
-  console.log("Client connected ", socket.id);
+// cors
+const cors=require("cors");
+app.use(cors("*"));
+// cors
 
-  global.socket = socket;
-  global.IO = IO;
+// helmet
+const helmet=require("helmet");
+app.use(helmet());
+app.use(helmet.hidePoweredBy("PHP 7.2.0"))
+// helmet
 
-  socket.on("join_room", (room) => {
-    socket.join(room);
-  });
-
-  socket.on("join_channel", (room, message) => {
-    IO.to(room).emit("res_channel", room, message);
-  })
-
-  socket.on('disconnect', () => {
-    console.log("Client disconnected ", socket.id);
-  });
-
-});
-
-app.use((req, res, next) => {
-  req.soket_io = IO;
-  next();
-});
-
-// global path
-global.root_dir=__dirname;
-global.caches={};
-// global.socketio=socket;
-global.app=app;
-// global path
-
-const PORT=process.env.PORT || 8000;
 
 // req timeout
 const {timeout,haltOnTimedout} = require("./middleware/timeout");
@@ -70,17 +42,6 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 // register request form
 
-// cors
-const cors=require("cors");
-app.use(cors("*"));
-// cors
-
-// helmet
-const helmet=require("helmet");
-app.use(helmet());
-app.use(helmet.hidePoweredBy("PHP 7.2.0"))
-// helmet
-
 const toobusy=require("toobusy-js");
 app.use(function(req, res, next) {
     if (toobusy()) {
@@ -96,12 +57,108 @@ app.use(function(req, res, next) {
 const morgan = require("morgan");
 app.use(morgan("dev"))
 
-// router
-app.use("/",require("./routes/index"));
-app.use(require("./middleware/error_handler"));
-
-server.listen(PORT,(err)=>{
-    if(err) throw err;
-    console.log(`Server is running ${PORT}`);
+const server=http.createServer(app);
+const IO=new Server(server,{
+    path:"/realtime",
+    allowEIO3: true,
+    cors: {
+        origin: ["*"],
+        methods: ["GET", "POST"],
+        credentials: true,
+    }
 });
 
+// IO.use((socket, next) => {
+//   const token = socket.handshake.query.token||null;
+
+//   if (token&&token=="3c1452f7b04771fbfa36e08dc8571ee4") {
+//     return next(); // Authentication succeeded
+//   } else {
+//     return next(new Error('Authentication failed'));
+//   }
+// });
+
+IO.on("connection",(socket)=>{
+  console.log("Client connected ",socket.id);
+
+  socket.on('disconnect', () => {
+      console.log("Client disconnected ",socket.id);
+  });
+
+});
+
+app.use((req,res,next)=>{
+  req.soketio = IO;
+  next();
+});
+
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
+const options = {
+  definition: {
+    openapi: "3.1.0",
+    info: {
+      title: "66Engine Express API with Swagger",
+      version: "0.1.0",
+      description:
+        "This is API documentation created with Express and documented with Swagger",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          in: 'header',
+          name: 'Authorization',
+          description: 'Bearer token to access these api endpoints',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+        agentAuth: [],
+      },
+    ],
+    servers: [
+      {
+        url: "http://localhost:8000",
+        description: "Development server",
+      },
+    ],
+  },
+  apis: ["./routes/*.swagger.js"],
+};
+
+const specs = swaggerJsdoc(options);
+const basicAuth = require("express-basic-auth");
+app.use(
+  "/api-docs",
+  basicAuth({
+    users: {
+      "handrawan": "123456",
+    },
+    challenge: true,
+  }),
+  swaggerUi.serve,
+  swaggerUi.setup(specs, {
+    explorer: true,
+    swaggerOptions: {
+      docExpansion: "none",
+      showRequestHeaders: true,
+    },
+  })
+);
+
+app.use("/",require("./routes/index"));
+
+server.listen(PORT,(err)=>{
+  if(err) throw err;
+  console.log(`Server is running ${PORT}`);
+});
