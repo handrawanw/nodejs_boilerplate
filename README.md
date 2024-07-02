@@ -11,36 +11,36 @@
 - Run migration to setup tables (directory: db/migrations)
 
 ```bash
-  yarn knex:migrate:latest
+  pnpm knex:migrate:latest
 ```
 
 - Run migration to setup data (directory: db/seeds)
 
 ```bash
-  yarn knex:seed:run
+  pnpm knex:seed:run
 ```
 
 ## Run project
-- install yarn your computer with npm
+- install pnpm your computer with npm
 ```
-npm install -g yarn
+npm install -g pnpm
 ```
 
-- Run for yarn install your terminal
+- Run for pnpm install your terminal
 ```bash
-  yarn install
+  pnpm install
 ```
 
 - Run for development/local
 
 ```bash
-  yarn dev
+  pnpm dev
 ```
 
 - Run for deployment
 
 ```bash
-  yarn start
+  pnpm start
 ```
 
 

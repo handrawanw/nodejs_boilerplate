@@ -73,10 +73,11 @@ const morgan = require("morgan");
 app.use(morgan("dev"))
 
 // router
-app.use("/api",require("./router/index"));
+app.use("/",require("./routes/index"));
 app.use(require("./middleware/error_handler"));
 
 app.listen(PORT,(err)=>{
     if(err) throw err;
     console.log(`Server is running ${PORT}`);
 });
+
