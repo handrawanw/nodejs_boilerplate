@@ -43,3 +43,5 @@ vendor/
 !uploadded/none.png
 
 yarn.lock
+
+pnpm-lock.yaml
